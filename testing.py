@@ -8,20 +8,32 @@
 # Contact : moralesdei@protonamil.com
 
 # Librerias necesarias para el correcto funcionamiento de los algoritmos.
-import scipy.io as sio
-import math
+from numpy import pi
+from control import  matlab
+from scipy import signal, zeros, io
 
 # Cargamos el archivo con las variables de nuestro entorno de trabajo.
-data = sio.loadmat('matlab/rd/environment.mat')
+data = io.loadmat('matlab/rd/environment.mat')
 
 # Extraemos las variables para poderlas utilizarla en nuestro script.
 locals().update(data)
 
 # there are L Nyquist periods in one period of p(t) (for Tropp's analysis
-# Tx=Tp or L=N)
+# Tx=Tp or L=N).
 L=N
 
 # 1-st order RC low-pass filter
-tau = 1/(2*math.pi*float(fc))
+# En este fragmento de codigo se hallo la respuesta al impulso del filtro RC
+# Implementado analogamente.
+tau = 1/(2*pi*float(fc))
 B = 1
 A = [tau,1]
+lpf = matlab.tf(B,A)
+lpf_d = matlab.c2d(lpf,(1/100E6),'tustin')
+Bd,Ad = matlab.tfdata(lpf_d)
+Bd = Bd[0][0]
+Ad = Ad[0][0]
+x = zeros(25)
+x[0] = 1
+h = signal.lfilter(Bd,Ad,x)
+print(h)
