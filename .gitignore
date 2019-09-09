@@ -1,3 +1,7 @@
-ltspice
-matlab
+ltspice/*
+!ltspice/test-hfa3101-rc-lpf.txt
+matlab/rd/*
+!matlab/rd/environment.mat
+__pycache__
 Reingenieria.txt
+Traduccion.txt

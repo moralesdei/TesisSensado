@@ -7,3 +7,20 @@
 
 En el siguiente repositorio se va a ir agregando algunos algoritmos correspondientes a tecnicas de sensado compresivo (Cs) 
 Entre los cuales vamos a poder encontrar el OMP, AMP y CoSaMP descritos en el lenguaje python.
+
+Los algortimos estan individualmente en archivos en el folder **scripts**.
+
+## Para ejecutar el algoritmo se recomienda :
+
+* Instalar los correspondientes modulos de python.
+
+* Darle permisos de ejecucion al archivo **testing.py**.
+'''
+sudo chmod +x  testing.py
+'''
+* Ejecutar el archivo.
+'''
+./testing.py
+'''
+* Disfrutar la reconstruccion de la señal !!!!
+
