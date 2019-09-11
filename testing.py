@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+# encoding: utf-8
 # Random Demodulator Recovery Algorithm by Using Simulated Analog Data from LTSpice.
 # Before using this script run rd_demo_ltsipce_gen script, run LTspice
 # simulation and export vout.
@@ -16,11 +16,13 @@ dir_modul = join(dir_abs, 'scripts')
 sys.path.append(dir_modul)
 from OmpAlgor import omp
 from os import name, system
-from numpy import pi, absolute, array, mean, zeros, shape, matrix, exp, diag, flipud, roll
+from numpy import pi, array, mean, zeros, shape, exp, diag, flipud, roll, argmin, arange, dot, sort
+from numpy.linalg import multi_dot
+from numpy.fft import fft,fftshift
+from matplotlib.pyplot import plot, show
 from control.matlab import tf, c2d, tfdata
-from scipy import signal, special, linalg
+from scipy.signal import lfilter
 from scipy.io import loadmat
-from operator import itemgetter
 from csv import reader
 
 system('cls' if name == 'nt' else 'clear')
@@ -77,10 +79,11 @@ lpf_d = c2d(lpf,1/(float(W)),'tustin')
 ### Simulando la funcion impz de matlab.
 x = zeros(25)
 x[0] = 1
-h = signal.lfilter(Bd,Ad,x)
+h = lfilter(Bd,Ad,x)
 
 # Finds closest time value to perform sampling
-i_tstart, dt_start = min(enumerate(absolute(tspice-Td)), key=itemgetter(1))
+i_tstart = argmin(abs(tspice-Td))
+
 lpfoutput = lpfoutput[i_tstart:-1]
 tspice = tspice[i_tstart:-1]
 lpfoutput=lpfoutput-mean(lpfoutput)
@@ -94,32 +97,48 @@ z=zeros(M, dtype=complex)
 print(' Adquiriendo las muestras a la tasa sub-Nyquist, espera un momento...')
 
 for k in range(M):
-   i_tstart, dt_start = min(enumerate(absolute(tspice-tstart)), key=itemgetter(1))
-   z[k] = lpfoutput[i_tstart]
-   tstart = tstart+1/fsn
+  i_tstart = argmin(abs(tspice-tstart))
+  z[k] = lpfoutput[i_tstart]
+  tstart = tstart+1/fsn
 print(' Muestras aquiridas.')
 
 # Creando la base de representacion Psi, se puede mejorar su rendimiento.
 print(' Creando la base de representacion por favor espera ...')
-l = matrix(range(int(N)))
-n = matrix(range(int(-N/2), int(N/2)))
-Psi =  exp(1j*(2*pi/N)*l.T * n)
+l = array([arange(int(N))])
+n = array([arange(int(-N/2), int(N/2))])
+Psi = exp(1j*(2*pi/N)*l.T*n)
 print(' Base de representacion construida.')
 
 D = diag(S)
 H=zeros((M,N))
-H[0,0:int((N/M))]=flipud(h[:])
+H[0,0:int((N/M))]=array([flipud(h[:])])
 for i in range(1,M):
     H[i,:] = roll(H[i-1,:],(0,int(N/M)))
-H = matrix(H)
 
 # Matriz necesaria para la recuperacion de la senal,tetha.
 print(' Generando la matriz para la recuperacion ...')
-A = H*D*Psi
+A = multi_dot([H,D,Psi])
 print(' Matriz necesaria para la recuperacion creada correctamente')
 
+z = array([z]).conj().T
 # Linea reservada para la invocacion de los algoritmos de recuperacion
-s = omp(A,z,k)
+s = omp(A,z,50)
 
+index = []
+for count, element  in enumerate(s):
+    if abs(element) > 0:
+        index.append(count)
+index = sort(index)
 
+X_hat = N*s
+tones = n.T
+freq_hat = tones[index]
+t = arange(0,Tx-1/(W),1/(W))
 
+x_hat = (1/N)*sum(dot(diag(X_hat[index,0]), exp(1j*(2*pi)/Tx*-freq_hat*t)),1).T
+f= arange(-len(x_hat)/2,len(x_hat)/2)
+# aux = len(x_hat) * (W)
+# f = array([x / aux for x in faux])
+print(f)
+# plot(f/1e6,abs(fftshift(fft(x_hat))))
+# show()

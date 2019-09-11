@@ -14,6 +14,7 @@ Los algortimos estan individualmente en archivos en el folder **scripts**.
 
 * Instalar los correspondientes modulos de python.
 
+	- matplotlib
 	- scipy
 	- numpy
 	- control
