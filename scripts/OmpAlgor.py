@@ -3,9 +3,8 @@
 # Algoritmo de reconstruccion de señales, utilizando sensado compresivo OMP
 # Created : Juan camilo Montilla Orjuela, Deimer Andres Morales Herrera (2019)
 # Contact : moralesdei@protonamil.com
-from numpy import argmax, asarray,  shape, array, zeros, sort, absolute, dot, vdot, matmul
-from numpy.linalg import norm, multi_dot, inv, solve, matrix_rank, lstsq
-from itertools import combinations
+from numpy import argmax, shape,  zeros, sort, matmul, asarray
+from numpy.linalg import norm, lstsq
 
 def omp(A,b,k):
 
@@ -26,7 +25,7 @@ def omp(A,b,k):
     for kk in range(k):
 
         # Encomtramos el nuevo atomo
-        ind_new = argmax(absolute(Ar))
+        ind_new = argmax(abs(Ar))
         indx_set[kk] = ind_new
 
         atom_new = A[:,ind_new]
@@ -54,5 +53,9 @@ def omp(A,b,k):
 
     A = A_T_nonorth[:,0:kk+1]
     x_T = lstsq(A, b, rcond=None)[0]
+
+    # Esta linea unicamente se creo con fines comparativos, no descomentar.
+    # x_T = asarray([[-0.0188 + 0.0028j],[-0.0056 + 0.0159j],[-0.0175 - 0.0038j],[-0.0012 - 0.0152j]])
+
     x[indx_set[0:kk+1].astype(int).T] = x_T
     return x

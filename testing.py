@@ -16,7 +16,7 @@ dir_modul = join(dir_abs, 'scripts')
 sys.path.append(dir_modul)
 from OmpAlgor import omp
 from os import name, system
-from numpy import pi, array, mean, zeros, shape, exp, diag, flipud, roll, argmin, arange, dot, sort
+from numpy import pi, asarray, mean, zeros, shape, exp, diag, flipud, roll, argmin, arange, dot, sort, matmul
 from numpy.linalg import multi_dot
 from numpy.fft import fft,fftshift
 from matplotlib.pyplot import plot, show
@@ -25,11 +25,7 @@ from scipy.signal import lfilter
 from scipy.io import loadmat
 from csv import reader
 
-system('cls' if name == 'nt' else 'clear')
-print('\n')
 print(' (☉_☉) Pruebas de algoritmos de reconstruccion (☉_☉)')
-print(' Este progama es totalmente libre para su uso y distribucion.')
-print('\n')
 
 #Cargamos todos nuestra area de trabajo.
 dir_environment = join(dir_abs, 'matlab', 'rd')
@@ -54,9 +50,9 @@ with open(signal_fname) as fileData:
         lpfoutputI.append(row[2])
         lpfoutputQ.append(row[1])
 
-tspice = array(list(map(float, tspice)))
-lpfoutputI = array(list(map(float, lpfoutputI)))
-lpfoutputQ = array(list(map(float, lpfoutputQ)))
+tspice = asarray(list(map(float, tspice)))
+lpfoutputI = asarray(list(map(float, lpfoutputI)))
+lpfoutputQ = asarray(list(map(float, lpfoutputQ)))
 
 # Ganancia del mixer.
 MixerGain=8
@@ -104,14 +100,14 @@ print(' Muestras aquiridas.')
 
 # Creando la base de representacion Psi, se puede mejorar su rendimiento.
 print(' Creando la base de representacion por favor espera ...')
-l = array([arange(int(N))])
-n = array([arange(int(-N/2), int(N/2))])
+l = arange(N).reshape(1,-1)
+n = arange(-N/2, N/2).reshape(1,-1)
 Psi = exp(1j*(2*pi/N)*l.T*n)
 print(' Base de representacion construida.')
 
 D = diag(S)
 H=zeros((M,N))
-H[0,0:int((N/M))]=array([flipud(h[:])])
+H[0,0:int((N/M))]=flipud(h[:])
 for i in range(1,M):
     H[i,:] = roll(H[i-1,:],(0,int(N/M)))
 
@@ -120,9 +116,9 @@ print(' Generando la matriz para la recuperacion ...')
 A = multi_dot([H,D,Psi])
 print(' Matriz necesaria para la recuperacion creada correctamente')
 
-z = array([z]).conj().T
+z = asarray([z]).conj().T
 # Linea reservada para la invocacion de los algoritmos de recuperacion
-s = omp(A,z,50)
+s = omp(A,z,4)
 
 index = []
 for count, element  in enumerate(s):
@@ -133,12 +129,9 @@ index = sort(index)
 X_hat = N*s
 tones = n.T
 freq_hat = tones[index]
-t = arange(0,Tx-1/(W),1/(W))
+t = arange(0,Tx,1/(W)).reshape(1,-1)
 
-x_hat = (1/N)*sum(dot(diag(X_hat[index,0]), exp(1j*(2*pi)/Tx*-freq_hat*t)),1).T
-f= arange(-len(x_hat)/2,len(x_hat)/2)
-# aux = len(x_hat) * (W)
-# f = array([x / aux for x in faux])
-print(f)
-# plot(f/1e6,abs(fftshift(fft(x_hat))))
-# show()
+x_hat = asarray((1/N)*sum(matmul(diag(X_hat[index,0]), exp(1j*(2*pi)/Tx*-freq_hat*t)).conj(), 1))
+f = (arange(-len(x_hat)/2,len(x_hat)/2) * W)/len(x_hat)
+plot(f/1e6,abs(fftshift(fft(x_hat))))
+show()
