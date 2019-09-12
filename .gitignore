@@ -1,7 +1,12 @@
 ltspice/*
 !ltspice/test-hfa3101-rc-lpf.txt
+
 matlab/rd/*
 !matlab/rd/environment.mat
+!matlab/rd/rd_demo_ltspice_sample_recovery.m
+!matlab/rd/rd_recovery2.m
+!matlab/rd/cs/
+
 __pycache__
 Reingenieria.txt
 Traduccion.txt
