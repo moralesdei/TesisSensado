@@ -40,23 +40,38 @@ A=H*D*Psi; % in accompanying technical report, H*D=Phi
  
 % s=greed_omp(y,A,N,'stopTol',N,'verbose',true); % support and FS coeffiecient recovery (T. Blumensath's OMP algorithm)  
 
+% %%%%%%%%%%%%%%%%%%%for OMP%%%%%%%%%%%%%
+% opts            = [];
+% opts.maxiter    = 50;
+% % opts.tol        = 1e-8;
+% % opts.HSS        = true;
+% % opts.two_solves = true; % this can help, but no longer always works "perfectly" on noiseless data
+% opts.printEvery = 10;
+% % K_target    = round(length(b)/3)-1; opts.normTol = 2.0;
+% K_target        = 50;   % When extremely noisy, this is best; when no noise, this is sub-optimal
+% % opts.addK       = 2*K_target; % default
+% % opts.addK       = K_target; % this seems to work a bit better
+% % opts.addK       = 5;    % make this smaller and CoSaMP behaves more like OMP 
+%                         % (and does better for the correlated measurement matrix)
+%  s = OMP( A, y.', K_target, [], opts);
+% 
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+
 %%%%%%%%%%%%%%%%%%%for CoSaMP%%%%%%%%%%%%%
 opts            = [];
 opts.maxiter    = 50;
-% opts.tol        = 1e-8;
-% opts.HSS        = true;
-% opts.two_solves = true; % this can help, but no longer always works "perfectly" on noiseless data
+opts.tol        = 1e-8;
+opts.HSS        = false;
+opts.two_solves = true; % this can help, but no longer always works "perfectly" on noiseless data
 opts.printEvery = 10;
 % K_target    = round(length(b)/3)-1; opts.normTol = 2.0;
 K_target        = 50;   % When extremely noisy, this is best; when no noise, this is sub-optimal
 % opts.addK       = 2*K_target; % default
-% opts.addK       = K_target; % this seems to work a bit better
+opts.addK       = K_target; % this seems to work a bit better
 % opts.addK       = 5;    % make this smaller and CoSaMP behaves more like OMP 
                         % (and does better for the correlated measurement matrix)
- s = OMP( A, y.', K_target, [], opts);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
-
+ s = CoSaMP( A, y.', K_target, [], opts);
+ 
 index=sort(find(abs(s)>0),'ascend');
 X_hat=N*s; 
 

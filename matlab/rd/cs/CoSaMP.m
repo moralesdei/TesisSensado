@@ -306,6 +306,7 @@ function tau = findCutoff( x, k )
 % finds the appropriate cutoff such that after hard-thresholding,
 % "x" will be k-sparse
 x   = sort( abs(x),'descend');
+disp(x)
 if k > length(x)
     tau = x(end)*.999;
 else

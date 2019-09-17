@@ -12,7 +12,7 @@ close all;
 clc;
 
 %To perform recovery by minimizing l1-norm
-addpath(genpath('sparsify_0_4'));
+% addpath(genpath('sparsify_0_4'));
 addpath(genpath('cs'));
 
 %Loads environment (saved rd_Demo_ltspice_gen_signals)

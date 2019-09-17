@@ -3,10 +3,9 @@
 # Algoritmo de reconstruccion de señales, utilizando sensado compresivo OMP
 # Created : Juan camilo Montilla Orjuela, Deimer Andres Morales Herrera (2019)
 # Contact : moralesdei@protonamil.com
-from numpy import argmax, shape,  zeros, sort, matmul, asarray, dot
-from numpy.linalg import norm, lstsq, solve, qr
-from scipy.linalg import solve_triangular, inv
-from scipy.optimize import nnls
+from numpy import argmax, shape, zeros, matmul
+from numpy.linalg import norm, qr
+from scipy.linalg import solve_triangular
 
 def omp(A,b,k):
     # inicializamos las variables necesarias.

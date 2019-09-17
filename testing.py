@@ -15,6 +15,7 @@ dir_abs = join(dirname(abspath(__file__)))
 dir_modul = join(dir_abs, 'scripts')
 sys.path.append(dir_modul)
 from OmpAlgor import omp
+from CoSaMPAlgor import CoSaMP
 from os import name, system
 from numpy import pi, asarray, mean, zeros, shape, exp, diag, flipud, roll, argmin, arange, dot, sort, matmul
 from numpy.linalg import multi_dot
