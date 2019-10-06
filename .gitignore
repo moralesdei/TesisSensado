@@ -3,6 +3,7 @@ ltspice/*
 
 matlab/rd/*
 !matlab/rd/environment.mat
+!matlab/rd/cs_example2.m
 !matlab/rd/rd_demo_ltspice_sample_recovery.m
 !matlab/rd/rd_recovery2.m
 !matlab/rd/cs/

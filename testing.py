@@ -119,7 +119,7 @@ print(' Matriz necesaria para la recuperacion creada correctamente')
 
 z = asarray([z]).conj().T
 # Linea reservada para la invocacion de los algoritmos de recuperacion
-s = omp(A, z, 50)
+s = CoSaMP(A, z, 50)
 
 index = []
 for count, element  in enumerate(s):

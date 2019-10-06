@@ -55,31 +55,114 @@ A=H*D*Psi; % in accompanying technical report, H*D=Phi
 %                         % (and does better for the correlated measurement matrix)
 %  s = OMP( A, y.', K_target, [], opts);
 % 
-% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%for CoSaMP%%%%%%%%%%%%%
-opts            = [];
-opts.maxiter    = 50;
-opts.tol        = 1e-8;
-opts.HSS        = false;
-opts.two_solves = true; % this can help, but no longer always works "perfectly" on noiseless data
-opts.printEvery = 10;
-% K_target    = round(length(b)/3)-1; opts.normTol = 2.0;
-K_target        = 50;   % When extremely noisy, this is best; when no noise, this is sub-optimal
-% opts.addK       = 2*K_target; % default
-opts.addK       = K_target; % this seems to work a bit better
-% opts.addK       = 5;    % make this smaller and CoSaMP behaves more like OMP 
-                        % (and does better for the correlated measurement matrix)
- s = CoSaMP( A, y.', K_target, [], opts);
- 
-index=sort(find(abs(s)>0),'ascend');
-X_hat=N*s; 
+% %%%%%%%%%%%%%%%%%%for CoSaMP%%%%%%%%%%%%%
+% opts            = [];
+% opts.maxiter    = 50;
+% opts.tol        = 1e-8;
+% opts.HSS        = false;
+% opts.two_solves = true; % this can help, but no longer always works "perfectly" on noiseless data
+% opts.printEvery = 10;
+% % K_target    = round(length(b)/3)-1; opts.normTol = 2.0;
+% K_target        = 50;   % When extremely noisy, this is best; when no noise, this is sub-optimal
+% % opts.addK       = 2*K_target; % default
+% opts.addK       = K_target; % this seems to work a bit better
+% % opts.addK       = 5;    % make this smaller and CoSaMP behaves more like OMP 
+%                         % (and does better for the correlated measurement matrix)
+%  s = CoSaMP( A, y.', K_target, [], opts);
 
-% Convert indices into corresponding frequencies (Hz)
-tones=(-N/2:N/2-1)';
-freq_hat=tones(index);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-t=0:1/(W):Tx-1/(W); % observation interval in sec [0,Tx]
+%%%%%%%%%%%%%%%%%%for AMP%%%%%%%%%%%%%
+Eta=@OptimalSoftThreshold_C;
+Etader=@OptimalSoftThresholdDer_C;
+par=cell(2,1);
+par{1}=0; par{2}='auto';
+
+[ empiricaliterwatch_sigma, s ] = GenericCAMP( y.',A,Eta,Etader,par );
+plot(empiricaliterwatch_sigma);
+
+xlabel('iteration');
+ylabel('sigma');
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+% index=sort(find(abs(s)>0),'ascend');
+% X_hat=N*s; 
+% 
+% % Convert indices into corresponding frequencies (Hz)
+% tones=(-N/2:N/2-1)';
+% freq_hat=tones(index);
+% 
+% t=0:1/(W):Tx-1/(W); % observation interval in sec [0,Tx]
 
 % Reconstruct Nyquist-rate samples
-x_hat=(1/N)*sum(diag(X_hat(index))  *exp(1i*(2*pi)/Tx*-freq_hat*t),1)';
+% x_hat=(1/N)*sum(diag(X_hat(index))  *exp(1i*(2*pi)/Tx*-freq_hat*t),1)';
+
+end
+
+
+function [v_new]=OptimalSoftThreshold_C(vv,ss)
+% Optimal tuned complex soft-thresholding function
+
+p=length(vv);
+nspace=51;
+beta=linspace(0,5,nspace);
+tau=beta*ss;
+R_tau=zeros(nspace,1);
+RR_tau=zeros(nspace,1);
+RI_tau=zeros(nspace,1);
+
+vvr=real(vv);
+vvi=imag(vv);
+absx3over2 = (vvr.^2+vvi.^2).^(3/2)+eps;
+
+for i=1:nspace
+        indicatorabsx = (vvr.^2+vvi.^2>tau(i).^2);
+        RR_tau(i)=1/p*sum( ((indicatorabsx.*(abs(vv)-tau(i)).*vvr./abs(vv+eps))-vvr).^2 )+...
+            +(ss^2)/2+(ss^2)/p*(-1+sum( indicatorabsx.*(1- tau(i)*vvi.^2./absx3over2) ));
+        RI_tau(i)=1/p*sum( ((indicatorabsx.*(abs(vv)-tau(i)).*vvi./abs(vv+eps))-vvi).^2 )+...
+            +(ss^2)/2+(ss^2)/p*(-1+sum( indicatorabsx.*(1- tau(i)*vvr.^2./absx3over2) ));
+        R_tau=RR_tau+RI_tau;
+end
+
+[~,index]=min(R_tau);
+opt_tau=tau(index);
+
+v_new=(abs(vv)> opt_tau).*(abs(vv)-opt_tau).*(vv)./abs(vv+eps);
+
+end
+
+function [d1, d2]=OptimalSoftThresholdDer_C(vv,ss)
+
+p=length(vv);
+nspace=51;
+beta=linspace(0,5,nspace);
+tau=beta*ss;
+R_tau=zeros(nspace,1);
+RR_tau=zeros(nspace,1);
+RI_tau=zeros(nspace,1);
+
+vvr=real(vv);
+vvi=imag(vv);
+absx3over2 = (vvr.^2+vvi.^2).^(3/2)+eps;
+
+for i=1:nspace
+        indicatorabsx = (vvr.^2+vvi.^2>tau(i).^2);
+        RR_tau(i)=1/p*sum( ((indicatorabsx.*(abs(vv)-tau(i)).*vvr./abs(vv+eps))-vvr).^2 )+...
+            +(ss^2)/2+(ss^2)/p*(-1+sum( indicatorabsx.*(1- tau(i)*vvi.^2./absx3over2) ));
+        RI_tau(i)=1/p*sum( ((indicatorabsx.*(abs(vv)-tau(i)).*vvi./abs(vv+eps))-vvi).^2 )+...
+            +(ss^2)/2+(ss^2)/p*(-1+sum( indicatorabsx.*(1- tau(i)*vvr.^2./absx3over2) ));
+        R_tau=RR_tau+RI_tau;
+end
+
+[~,index]=min(R_tau);
+opt_tau=tau(index);
+
+d1=(abs(vv)> opt_tau).*(1- opt_tau*(vvi.^2)./absx3over2);
+d2=(abs(vv)> opt_tau).*(1- opt_tau*(vvr.^2)./absx3over2); 
+
+end
+
