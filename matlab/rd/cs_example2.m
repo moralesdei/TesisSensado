@@ -35,13 +35,14 @@ Binv=inv(B)*N/sqrt(M);
 
 
 %creating measurement pattern
-p=randperm(N,M);
-
+% p=randperm(N,M);
+p =[ 59,  28, 231,  79, 202, 249, 122,  79, 101,  20,  13, 244,  69,177,  97, 205,  37, 232,  42,  50,  46, 129,  59,  72,   7, 200,43, 117, 145,  40, 142, 171];
+p=p+1;
 %taking random time measurements
 y=x(p)';
 
 %Measurement matrix is built by taking random rows from DFT matrix
-A=5*Binv(p,:)+3;
+A=Binv(p,:);
 
 %Recovery algorithm
 % s=greed_omp(y,A,N);
