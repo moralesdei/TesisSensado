@@ -51,7 +51,7 @@ A=Binv(p,:);
 Eta=@soft_thresholding_C;
 Etader=@CalculateSoftThresholdDerivativeComplex;
 par=cell(2,1);
-par{1}=0; par{2}='auto';
+par{1}=0; par{2}=50;
 
 [ empiricaliterwatch_sigma, s ] = GenericCAMP( y,A,Eta,Etader,par );
 plot(empiricaliterwatch_sigma);

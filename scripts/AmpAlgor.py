@@ -4,9 +4,28 @@
 # Created : Juan camilo Montilla Orjuela, Deimer Andres Morales Herrera (2019)
 # Contact : moralesdei@protonamil.com
 
-from numpy import spacing, arange, size, empty, shape
+from numpy import spacing, arange, size, empty, shape, zeros, matmul, mean, ones, median, sqrt, log
 
 def amp(A,b,k):
+    Af = lambda A,x: matmul(A,x).conj()
+    At = lambda A,x: (matmul(A.T,x)).conj()
+    n = size(b)
+    lengthN = At(A,zeros((n,1)))
+    N = size(lengthN)
+    b = b - mean(b)
+    colnormA = ones((N,1))
+    xall = zeros((N,k+1))
+    mx = zeros((N,1))
+    mz = b - Af(A,mx/colnormA)
+
+    for kk in range(k):
+        temp_z = (At(A,mz)/colnormA + mx)
+        sigma_hat = 1/sqrt(log(2))*median(abs(temp_z))
+        mx = softhold(temp_z,sigma_hat)
+        etaderR,etaderI = dersofthold(temp_z,sigma_hat)
+        mz = b - Af(A,mx/colnormA) + mz*(sum(etaderR) + sum(etaderI))/(2*n)
+        xall = mx/colnormA
+    return xall
 
 def softhold(x, lam):
     eta=(abs(x)> lam)*(abs(x)-lam)*(x)/abs(x+spacing(1))
@@ -18,16 +37,14 @@ def dersofthold(x, lam):
     absx3over2 = (xr**2+xi**2)**(3/2)+spacing(1)
     indicatorabsx = (xr**2+xi**2>lam**2)
 
-    dxR = empty(shape=[size(indicatorabsx), 2])
-    dxR[:,0] = indicatorabsx*(1- lam*xi**2/absx3over2)
-    dxR[:,1] = lam*indicatorabsx*xr*xi/absx3over2
+    dxR1 = indicatorabsx*(1- lam*xi**2/absx3over2)
+    dxR2 = lam*indicatorabsx*xr*xi/absx3over2
 
-    dxI = empty(shape=[size(indicatorabsx), 2])
-    dxI[:,0] = lam*indicatorabsx*xr*xi/absx3over2
-    dxI[:,1] = indicatorabsx*(1- lam*xr**2/absx3over2)
+    dxI1 = lam*indicatorabsx*xr*xi/absx3over2
+    dxI2 = indicatorabsx*(1- lam*xr**2/absx3over2)
 
-    d0 = dxR[:,0].reshape(-1,1)
-    d1 = dxI[:,1].reshape(-1,1)
+    d0 = dxR1
+    d1 = dxI2
 
     return d0, d1
 
