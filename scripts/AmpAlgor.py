@@ -4,11 +4,11 @@
 # Created : Juan camilo Montilla Orjuela, Deimer Andres Morales Herrera (2019)
 # Contact : moralesdei@protonamil.com
 
-from numpy import spacing, arange, size, empty, shape, zeros, matmul, mean, ones, median, sqrt, log
+from numpy import spacing, arange, size, empty, shape, zeros, dot, mean, ones, median, sqrt, log
 
 def amp(A,b,k):
-    Af = lambda A,x: matmul(A,x).conj()
-    At = lambda A,x: (matmul(A.T,x)).conj()
+    Af = lambda A,x: dot(A,x).conj()
+    At = lambda A,x: (dot(A.T,x)).conj()
     n = size(b)
     lengthN = At(A,zeros((n,1)))
     N = size(lengthN)

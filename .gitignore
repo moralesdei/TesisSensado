@@ -12,3 +12,6 @@ __pycache__
 Reingenieria.txt
 Traduccion.txt
 store.pckl
+signal_recovery.pckl
+store_amp.pckl
+

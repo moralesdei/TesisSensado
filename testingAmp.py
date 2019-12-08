@@ -8,6 +8,7 @@
 # Librerias necesarias para el correcto funcionamiento de los algoritmos.
 
 import sys
+import pickle
 from os.path import join, dirname, abspath
 dir_abs = join(dirname(abspath(__file__)))
 dir_modul = join(dir_abs, 'scripts')
@@ -45,7 +46,11 @@ p = randint(0, N, size=M).reshape(-1,1)
 y = x[p]
 
 A = Binv[p,:].reshape(M,N)
+fil = open('store_amp.pckl', 'wb')
+pickle.dump([A,y], fil)
+fil.close()
 s = amp(A, y, 50)
+
 
 figure()
 title('Senal Recuperada')

@@ -3,13 +3,13 @@
 # Algoritmo de reconstruccion de señales, utilizando sensado compresivo OMP
 # Created : Juan camilo Montilla Orjuela, Deimer Andres Morales Herrera (2019)
 # Contact : moralesdei@protonamil.com
-from numpy import argmax, shape, zeros, matmul
+from numpy import argmax, shape, zeros, dot
 from numpy.linalg import norm, qr
 from scipy.linalg import solve_triangular
 
 def omp(A,b,k):
     # inicializamos las variables necesarias.
-    At = lambda x: (matmul(A.T,x)).conj()
+    At = lambda x: (dot(A.T,x)).conj()
     r = b
     Ar = At(r)
     # Numero de atomos.
@@ -34,18 +34,18 @@ def omp(A,b,k):
         # Primero, ortogonaliza 'atom_new' contra todos los átomos anteriores
         for j in range(kk-1):
             aux = A_T[:,j]
-            atom_new = atom_new - (matmul(aux.T, atom_new)).conj() * aux
+            atom_new = atom_new - (dot(aux.T, atom_new)).conj() * aux
 
         # Segundo, normalizamos
         atom_new = atom_new/norm(atom_new)
         A_T[:,kk] = atom_new
 
         # Tercero, Solucionar el problema de los minimos cuadrados.
-        x_T = (matmul(A_T[:,0:kk+1].T,b)).conj()
+        x_T = (dot(A_T[:,0:kk+1].T,b)).conj()
         x[indx_set[0:kk+1].astype(int).T] = x_T
 
         # Cuarto, actualizar el residuo.
-        r = b - (matmul(A_T[:,0:kk+1], x_T)).conj()
+        r = b - (dot(A_T[:,0:kk+1], x_T)).conj()
 
         # Preparandose para el proximo golpe
         if kk < k:
@@ -53,7 +53,7 @@ def omp(A,b,k):
 
     A = A_T_nonorth[:,0:kk+1]
     Q, R = qr(A)
-    x_T = solve_triangular(R, matmul(Q.T,b).conj(), lower=True)
+    x_T = solve_triangular(R, dot(Q.T,b).conj(), lower=True)
 
     # Esta linea unicamente se creo con fines comparativos, no descomentar.
     # x_T = asarray([[-0.0188 + 0.0028j],[-0.0056 + 0.0159j],[-0.0175 - 0.0038j],[-0.0012 - 0.0152j]])

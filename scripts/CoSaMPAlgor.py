@@ -3,12 +3,12 @@
 # Algoritmo de reconstruccion de señales, utilizando sensado compresivo CoSaMP
 # Created : Juan camilo Montilla Orjuela, Deimer Andres Morales Herrera (2019)
 # Contact : moralesdei@protonamil.com
-from numpy import argmax, argsort, shape, zeros, sort, matmul, asarray
+from numpy import argmax, argsort, shape, zeros, sort, dot, asarray
 from numpy.linalg import lstsq, norm, qr
 from scipy.linalg import solve_triangular
 
 def CoSaMP(A,b,k):
-    At = lambda x: (matmul(A.T,x)).conj()
+    At = lambda x: (dot(A.T,x)).conj()
     r = b
     Ar = At(r)
     N = len(Ar) # Numero de atomos.
@@ -30,7 +30,7 @@ def CoSaMP(A,b,k):
         T = sort(asarray(list(set(ind_new).union(ind_k))))
 
         Q, R = qr(A[:,T])
-        x_T = solve_triangular(R, matmul(Q.T,b).conj(), lower=False)
+        x_T = solve_triangular(R, dot(Q.T,b).conj(), lower=False)
 
         cutoff = findCutoff(x_T, k)
         Tk = []
@@ -43,9 +43,9 @@ def CoSaMP(A,b,k):
         x[ind_k] = x_T[Tk]
 
         Q, R = qr(A[:,ind_k])
-        x_T2 = solve_triangular(R, matmul(Q.T,b).conj(), lower=False)
+        x_T2 = solve_triangular(R, dot(Q.T,b).conj(), lower=False)
         x[ind_k] = x_T2
-        r = b - (matmul(A[:,ind_k], x_T[Tk])).conj()
+        r = b - (dot(A[:,ind_k], x_T[Tk])).conj()
 
         if kk < k:
             Ar = At(r)
