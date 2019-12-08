@@ -10,6 +10,7 @@
 # Librerias necesarias para el correcto funcionamiento de los algoritmos.
 
 import sys
+import pickle
 from os.path import join, dirname, abspath
 dir_abs = join(dirname(abspath(__file__)))
 dir_modul = join(dir_abs, 'scripts')
@@ -118,6 +119,11 @@ A = multi_dot([H,D,Psi])
 print(' Matriz necesaria para la recuperacion creada correctamente')
 
 z = asarray([z]).conj().T
+
+f = open('store.pckl', 'wb')
+pickle.dump([A,z], f)
+f.close()
+
 # Linea reservada para la invocacion de los algoritmos de recuperacion
 s = CoSaMP(A, z, 50)
 
