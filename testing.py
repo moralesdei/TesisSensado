@@ -21,7 +21,7 @@ from os import name, system
 from numpy import pi, asarray, mean, zeros, shape, exp, diag, flipud, roll, argmin, arange, dot, sort, matmul
 from numpy.linalg import multi_dot
 from numpy.fft import fft,fftshift
-from matplotlib.pyplot import plot, show
+from matplotlib.pyplot import plot, show, figure
 from control.matlab import tf, c2d, tfdata
 from scipy.signal import lfilter
 from scipy.io import loadmat
@@ -74,6 +74,7 @@ lpf = tf(B,A)
 lpf_d = c2d(lpf,1/(float(W)),'tustin')
 [[Bd]],[[Ad]] = tfdata(lpf_d)
 
+original = x
 ### Simulando la funcion impz de matlab.
 x = zeros(25)
 x[0] = 1
@@ -140,5 +141,10 @@ t = arange(0,Tx,1/(W)).reshape(1,-1)
 
 x_hat = asarray((1/N)*sum(matmul(diag(X_hat[index,0]), exp(1j*(2*pi)/Tx*-freq_hat*t)).conj(), 1))
 f = (arange(-len(x_hat)/2,len(x_hat)/2) * W)/len(x_hat)
+
+plot(f/1e6,abs(fftshift(fft(original))))
+
+figure()
+
 plot(f/1e6,abs(fftshift(fft(x_hat))))
 show()
