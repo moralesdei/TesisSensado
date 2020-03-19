@@ -5,10 +5,11 @@
 # Contact : moralesdei@protonamil.com
 
 from numpy import spacing, arange, size, empty, shape, zeros, dot, mean, ones, median, sqrt, log
+from MultHowKing import mulhowking
 
 def amp(A,b,k):
-    Af = lambda A,x: dot(A,x).conj()
-    At = lambda A,x: (dot(A.T,x)).conj()
+    Af = lambda A,x: mulhowking(A,x)
+    At = lambda A,x: mulhowking(A.T,x)
     n = size(b)
     lengthN = At(A,zeros((n,1)))
     N = size(lengthN)
@@ -47,6 +48,3 @@ def dersofthold(x, lam):
     d1 = dxI2
 
     return d0, d1
-
-
-

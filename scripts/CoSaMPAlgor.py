@@ -6,9 +6,10 @@
 from numpy import argmax, argsort, shape, zeros, sort, dot, asarray
 from numpy.linalg import lstsq, norm, qr
 from scipy.linalg import solve_triangular
+from MultHowKing import mulhowking
 
 def CoSaMP(A,b,k):
-    At = lambda x: (dot(A.T,x)).conj()
+    At = lambda x: mulhowking(A.T,x)
     r = b
     Ar = At(r)
     N = len(Ar) # Numero de atomos.
@@ -30,7 +31,7 @@ def CoSaMP(A,b,k):
         T = sort(asarray(list(set(ind_new).union(ind_k))))
 
         Q, R = qr(A[:,T])
-        x_T = solve_triangular(R, dot(Q.T,b).conj(), lower=False)
+        x_T = solve_triangular(R, mulhowking(Q.T,b), lower=False)
 
         cutoff = findCutoff(x_T, k)
         Tk = []
@@ -43,9 +44,9 @@ def CoSaMP(A,b,k):
         x[ind_k] = x_T[Tk]
 
         Q, R = qr(A[:,ind_k])
-        x_T2 = solve_triangular(R, dot(Q.T,b).conj(), lower=False)
+        x_T2 = solve_triangular(R, mulhowking(Q.T,b), lower=False)
         x[ind_k] = x_T2
-        r = b - (dot(A[:,ind_k], x_T[Tk])).conj()
+        r = b - mulhowking(A[:,ind_k], x_T[Tk])
 
         if kk < k:
             Ar = At(r)
