@@ -35,9 +35,12 @@ def omp(A,b,k):
         # Primero, ortogonaliza 'atom_new' contra todos los átomos anteriores
         for j in range(kk-1):
             aux = A_T[:,j]
+            aux = aux.reshape(-1,1)
+            atom_new = atom_new.reshape(-1,1)
             atom_new = atom_new - mulhowking(aux.T, atom_new) * aux
 
         # Segundo, normalizamos
+        atom_new = atom_new.ravel()
         atom_new = atom_new/norm(atom_new)
         A_T[:,kk] = atom_new
 
