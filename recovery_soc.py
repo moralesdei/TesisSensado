@@ -8,6 +8,7 @@
 
 import sys
 import pickle
+import time
 from os.path import join, dirname, abspath
 from numpy import shape
 dir_abs = join(dirname(abspath(__file__)))
@@ -22,6 +23,7 @@ f = open('store.pckl', 'rb')
 [A,z] = pickle.load(f)
 f.close()
 
+start_p = time.time()
 # Linea reservada para la invocacion de los algoritmos de recuperacion
 s = CoSaMP(A, z, 50)
 
@@ -29,4 +31,5 @@ s = CoSaMP(A, z, 50)
 f = open('signal_recovery.pckl', 'wb')
 pickle.dump(s, f)
 f.close()
-
+end_p = time.time()
+print("\nTiempo de ejecucion : " + str(end_p-start_p) + "\n")
