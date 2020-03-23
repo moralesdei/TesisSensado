@@ -5,6 +5,7 @@
 # Contact : moralesdei@protonamil.com
 
 from numpy import spacing, arange, size, empty, shape, zeros, dot, mean, ones, median, sqrt, log
+from numpy.linalg import norm
 from MultHowKing import mulhowking
 
 def amp(A,b,k):
@@ -25,6 +26,9 @@ def amp(A,b,k):
         mx = softhold(temp_z,sigma_hat)
         etaderR,etaderI = dersofthold(temp_z,sigma_hat)
         mz = b - Af(A,mx/colnormA) + mz*(sum(etaderR) + sum(etaderI))/(2*n)
+        normMZ = norm(mz)
+        print(normMZ)
+
         xall = mx/colnormA
     return xall
 

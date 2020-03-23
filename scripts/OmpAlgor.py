@@ -22,6 +22,7 @@ def omp(A,b,k):
     A_T = zeros((M,k), dtype=complex)
     A_T_nonorth = zeros((M,k), dtype=complex)
 
+
     # Aca empieza el 'el ciclo'
     for kk in range(k):
 
@@ -50,6 +51,9 @@ def omp(A,b,k):
 
         # Cuarto, actualizar el residuo.
         r = b - mulhowking(A_T[:,0:kk+1], x_T)
+		r = r.reshape(-1,1)
+        normR = norm(r)
+        print(normR)
 
         # Preparandose para el proximo golpe
         if kk < k:

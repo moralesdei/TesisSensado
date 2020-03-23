@@ -47,6 +47,8 @@ def CoSaMP(A,b,k):
         x_T2 = solve_triangular(R, mulhowking(Q.T,b), lower=False)
         x[ind_k] = x_T2
         r = b - mulhowking(A[:,ind_k], x_T[Tk])
+        normR = norm(r)
+        print(normR)
 
         if kk < k:
             Ar = At(r)
