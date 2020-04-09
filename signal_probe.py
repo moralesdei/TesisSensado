@@ -14,7 +14,7 @@ from os.path import join, dirname, abspath
 dir_abs = join(dirname(abspath(__file__)))
 from numpy import pi, asarray, exp, arange, diag, sort, matmul
 from numpy.fft import fft,fftshift
-from matplotlib.pyplot import plot, show
+from matplotlib.pyplot import plot, show, title, xlabel, ylabel
 from scipy.io import loadmat
 
 #Cargamos todos nuestra area de trabajo.
@@ -44,5 +44,8 @@ t = arange(0,Tx,1/(W)).reshape(1,-1)
 
 x_hat = asarray((1/N)*sum(matmul(diag(X_hat[index,0]), exp(1j*(2*pi)/Tx*-freq_hat*t)).conj(), 1))
 f = (arange(-len(x_hat)/2,len(x_hat)/2) * W)/len(x_hat)
+title("Fourier Spectrum--Reconstructed signal")
+xlabel("MHz")
+ylabel("Magnitude")
 plot(f/1e6,abs(fftshift(fft(x_hat))))
 show()
