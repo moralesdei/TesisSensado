@@ -41,19 +41,19 @@ A=H*D*Psi; % in accompanying technical report, H*D=Phi
 % s=greed_omp(y,A,N,'stopTol',N,'verbose',true); % support and FS coeffiecient recovery (T. Blumensath's OMP algorithm)  
 
 % %%%%%%%%%%%%%%%%%%%for OMP%%%%%%%%%%%%%
-% opts            = [];
-% opts.maxiter    = 50;
-% % opts.tol        = 1e-8;
-% % opts.HSS        = true;
-% % opts.two_solves = true; % this can help, but no longer always works "perfectly" on noiseless data
-% opts.printEvery = 10;
-% % K_target    = round(length(b)/3)-1; opts.normTol = 2.0;
-% K_target        = 50;   % When extremely noisy, this is best; when no noise, this is sub-optimal
-% % opts.addK       = 2*K_target; % default
-% % opts.addK       = K_target; % this seems to work a bit better
-% % opts.addK       = 5;    % make this smaller and CoSaMP behaves more like OMP 
-%                         % (and does better for the correlated measurement matrix)
-%  s = OMP( A, y.', K_target, [], opts);
+opts            = [];
+opts.maxiter    = 50;
+% opts.tol        = 1e-8;
+% opts.HSS        = true;
+% opts.two_solves = true; % this can help, but no longer always works "perfectly" on noiseless data
+opts.printEvery = 10;
+% K_target    = round(length(b)/3)-1; opts.normTol = 2.0;
+K_target        = 50;   % When extremely noisy, this is best; when no noise, this is sub-optimal
+% opts.addK       = 2*K_target; % default
+% opts.addK       = K_target; % this seems to work a bit better
+% opts.addK       = 5;    % make this smaller and CoSaMP behaves more like OMP 
+                        % (and does better for the correlated measurement matrix)
+ s = OMP( A, y.', K_target, [], opts);
 % 
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -74,32 +74,32 @@ A=H*D*Psi; % in accompanying technical report, H*D=Phi
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%for AMP%%%%%%%%%%%%%
-Eta=@OptimalSoftThreshold_C;
-Etader=@OptimalSoftThresholdDer_C;
-par=cell(2,1);
-par{1}=0; par{2}='auto';
-
-[ empiricaliterwatch_sigma, s ] = GenericCAMP( y.',A,Eta,Etader,par );
-plot(empiricaliterwatch_sigma);
-
-xlabel('iteration');
-ylabel('sigma');
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
-% index=sort(find(abs(s)>0),'ascend');
-% X_hat=N*s; 
+% %%%%%%%%%%%%%%%%%%for AMP%%%%%%%%%%%%%
+% Eta=@OptimalSoftThreshold_C;
+% Etader=@OptimalSoftThresholdDer_C;
+% par=cell(2,1);
+% par{1}=0; par{2}='auto';
 % 
-% % Convert indices into corresponding frequencies (Hz)
-% tones=(-N/2:N/2-1)';
-% freq_hat=tones(index);
+% [ empiricaliterwatch_sigma, s ] = GenericCAMP( y.',A,Eta,Etader,par );
+% plot(empiricaliterwatch_sigma);
 % 
-% t=0:1/(W):Tx-1/(W); % observation interval in sec [0,Tx]
+% xlabel('iteration');
+% ylabel('sigma');
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+index=sort(find(abs(s)>0),'ascend');
+X_hat=N*s; 
+
+% Convert indices into corresponding frequencies (Hz)
+tones=(-N/2:N/2-1)';
+freq_hat=tones(index);
+
+t=0:1/(W):Tx-1/(W); % observation interval in sec [0,Tx]
 
 % Reconstruct Nyquist-rate samples
-% x_hat=(1/N)*sum(diag(X_hat(index))  *exp(1i*(2*pi)/Tx*-freq_hat*t),1)';
+x_hat=(1/N)*sum(diag(X_hat(index))  *exp(1i*(2*pi)/Tx*-freq_hat*t),1)';
 
 end
 
