@@ -46,7 +46,8 @@ def CoSaMP(A,b,k):
         x_T2 = solve_triangular(R, dot(Q.T,b).conj(), lower=False)
         x[ind_k] = x_T2
         r = b - (dot(A[:,ind_k], x_T[Tk])).conj()
-
+        normR = norm(r)
+        print(normR)
         if kk < k:
             Ar = At(r)
     return x

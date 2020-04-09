@@ -24,6 +24,9 @@ def amp(A,b,k):
         mx = softhold(temp_z,sigma_hat)
         etaderR,etaderI = dersofthold(temp_z,sigma_hat)
         mz = b - Af(A,mx/colnormA) + mz*(sum(etaderR) + sum(etaderI))/(2*n)
+        normMZ = norm(mz)
+        print(normMZ)
+
         xall = mx/colnormA
     return xall
 
@@ -47,6 +50,3 @@ def dersofthold(x, lam):
     d1 = dxI2
 
     return d0, d1
-
-
-

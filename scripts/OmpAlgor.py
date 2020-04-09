@@ -46,6 +46,8 @@ def omp(A,b,k):
 
         # Cuarto, actualizar el residuo.
         r = b - (dot(A_T[:,0:kk+1], x_T)).conj()
+        normR = norm(r)
+        print(normR)
 
         # Preparandose para el proximo golpe
         if kk < k:
