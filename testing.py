@@ -21,7 +21,7 @@ from os import name, system
 from numpy import pi, asarray, mean, zeros, shape, exp, diag, flipud, roll, argmin, arange, dot, sort, matmul
 from numpy.linalg import multi_dot
 from numpy.fft import fft,fftshift
-from matplotlib.pyplot import plot, show, figure
+from matplotlib.pyplot import plot, show, figure, title, xlabel, ylabel
 from control.matlab import tf, c2d, tfdata
 from scipy.signal import lfilter
 from scipy.io import loadmat
@@ -142,6 +142,9 @@ t = arange(0,Tx,1/(W)).reshape(1,-1)
 x_hat = asarray((1/N)*sum(matmul(diag(X_hat[index,0]), exp(1j*(2*pi)/Tx*-freq_hat*t)).conj(), 1))
 f = (arange(-len(x_hat)/2,len(x_hat)/2) * W)/len(x_hat)
 
+title("Fourier Spectrum--Input signal")
+xlabel("MHz")
+ylabel("Magnitude")
 plot(f/1e6,abs(fftshift(fft(original))))
 
 figure()

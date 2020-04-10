@@ -18,7 +18,7 @@ from numpy import arange, sin, pi, eye, asarray, shape, sqrt
 from numpy.linalg import inv
 from numpy.random import randint
 from numpy.fft import fft, fftshift
-from matplotlib.pyplot import plot, show, figure, title
+from matplotlib.pyplot import plot, show, figure, title, xlabel, ylabel
 
 # Tamano de la senal
 N = 256
@@ -34,7 +34,9 @@ n = arange(0,N)
 x = sin(2*pi*(k1/N)*n)+sin(2*pi*(k2/N)*n)
 
 f = (arange(-len(x)/2,len(x)/2))
-title('Senal original')
+title("Fourier Spectrum--Input signal")
+xlabel("Hz")
+ylabel("Magnitude")
 plot(f,abs(fftshift(fft(x))))
 
 # Creando dft matrix
