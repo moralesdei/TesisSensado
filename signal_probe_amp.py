@@ -11,7 +11,7 @@
 import pickle
 from numpy import arange, sin, pi
 from numpy.fft import fftshift
-from matplotlib.pyplot import plot, show, figure, title
+from matplotlib.pyplot import plot, show, figure, title, xlabel, ylabel
 
 
 # Tamano de la senal
@@ -34,6 +34,8 @@ s = pickle.load(fil)
 fil.close()
 
 figure()
-title('Senal Recuperada')
+title("Fourier Spectrum--Reconstructed signal")
+xlabel("Hz")
+ylabel("Magnitude")
 plot(f,abs(fftshift(s)))
 show()
