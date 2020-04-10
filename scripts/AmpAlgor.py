@@ -18,6 +18,7 @@ def amp(A,b,k):
     colnormA = ones((N,1))
     xall = zeros((N,k+1))
     mx = zeros((N,1))
+    norm_past = 10
     mz = b - Af(A,mx/colnormA)
 
     for kk in range(k):
@@ -27,6 +28,9 @@ def amp(A,b,k):
         etaderR,etaderI = dersofthold(temp_z,sigma_hat)
         mz = b - Af(A,mx/colnormA) + mz*(sum(etaderR) + sum(etaderI))/(2*n)
         normMZ = norm(mz)
+        if norm_past < normMZ:
+             break
+        norm_past = normMZ
         print(normMZ)
 
         xall = mx/colnormA
