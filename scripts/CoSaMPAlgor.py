@@ -14,6 +14,7 @@ def CoSaMP(A,b,k):
     N = len(Ar) # Numero de atomos.
     M = len(r) # Tamano de los atomos.
     x = zeros((N,1), dtype=complex)
+    norm_past = 10
     ind_k = []
 
     for kk in range(k):
@@ -47,6 +48,10 @@ def CoSaMP(A,b,k):
         x[ind_k] = x_T2
         r = b - (dot(A[:,ind_k], x_T[Tk])).conj()
         normR = norm(r)
+
+        if norm_past < normR:
+             break
+        norm_past = normR
         print(normR)
         if kk < k:
             Ar = At(r)

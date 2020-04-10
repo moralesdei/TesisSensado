@@ -5,6 +5,7 @@
 # Contact : moralesdei@protonamil.com
 
 from numpy import spacing, arange, size, empty, shape, zeros, dot, mean, ones, median, sqrt, log
+from numpy.linalg import norm
 
 def amp(A,b,k):
     Af = lambda A,x: dot(A,x).conj()
@@ -14,6 +15,7 @@ def amp(A,b,k):
     N = size(lengthN)
     b = b - mean(b)
     colnormA = ones((N,1))
+    norm_past = 10
     xall = zeros((N,k+1))
     mx = zeros((N,1))
     mz = b - Af(A,mx/colnormA)
@@ -25,6 +27,9 @@ def amp(A,b,k):
         etaderR,etaderI = dersofthold(temp_z,sigma_hat)
         mz = b - Af(A,mx/colnormA) + mz*(sum(etaderR) + sum(etaderI))/(2*n)
         normMZ = norm(mz)
+        if norm_past < 1:
+             break
+        norm_past = normMZ
         print(normMZ)
 
         xall = mx/colnormA

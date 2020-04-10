@@ -16,6 +16,7 @@ def omp(A,b,k):
     N = len(Ar)
     # Tamano de cada atomo.
     M = len(r)
+    norm_past = 10
     x = zeros((N,1), dtype=complex)
     indx_set = zeros((k,1))
     A_T = zeros((M,k), dtype=complex)
@@ -47,6 +48,10 @@ def omp(A,b,k):
         # Cuarto, actualizar el residuo.
         r = b - (dot(A_T[:,0:kk+1], x_T)).conj()
         normR = norm(r)
+        if norm_past < normR:
+             break
+        norm_past = normR
+
         print(normR)
 
         # Preparandose para el proximo golpe
