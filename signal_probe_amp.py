@@ -34,7 +34,7 @@ s = pickle.load(fil)
 fil.close()
 
 figure()
-title("Fourier Spectrum--Reconstructed signal")
+title("Espectro de Fourier -- Señal reconstruida")
 xlabel("Hz")
 ylabel("Magnitude")
 plot(f,abs(fftshift(s)))
